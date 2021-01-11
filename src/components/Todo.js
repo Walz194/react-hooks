@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useReducer } from "react";
+import React, { useEffect, useReducer, useRef } from "react";
 import axios from "axios";
 
 const Todo = (props) => {
-  const [todoName, setTodoName] = useState("");
+  //const [todoName, setTodoName] = useState("");
   //const [todoList, setTodoList] = useState([]);
-  const [submittedTodo, setSubmittedTodo] = useState(null);
+  //const [submittedTodo, setSubmittedTodo] = useState(null);
+  const todoInputRef = useRef();
 
   const todoListReducer = (state, action) => {
     switch (action.type) {
@@ -38,17 +39,18 @@ const Todo = (props) => {
       });
   }, []);
 
-  useEffect(() => {
-    if (submittedTodo) {
-      dispatch({ type: "ADD", payload: submittedTodo });
-    }
-  }, [submittedTodo]);
+  // useEffect(() => {
+  //   if (submittedTodo) {
+  //     dispatch({ type: "ADD", payload: submittedTodo });
+  //   }
+  // }, [submittedTodo]);
 
-  const inputChangeHandler = (event) => {
-    setTodoName(event.target.value);
-  };
+  // const inputChangeHandler = (event) => {
+  //   setTodoName(event.target.value);
+  // };
 
   const todoAddHandler = () => {
+    const todoName = todoInputRef.current.value;
     axios
       .post("https://todo-app-270d6-default-rtdb.firebaseio.com/todo.json", {
         name: todoName,
@@ -56,7 +58,7 @@ const Todo = (props) => {
       .then((res) => {
         console.log(res);
         const todoItem = { id: res.data.name, name: todoName };
-        setSubmittedTodo(todoItem);
+        dispatch({ type: "ADD", payload: todoItem });
       })
       .catch((err) => {
         console.log(err);
@@ -82,6 +84,7 @@ const Todo = (props) => {
             value={todoName}
             placeholder="Todo"
             type="text"
+            ref={todoInputRef}
           />
           <button
             className="btn btn-primary"
